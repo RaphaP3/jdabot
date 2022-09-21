@@ -18,6 +18,8 @@ dependencies {
     implementation 'com.github.DV8FromTheWorld:JDA:v4.4.0'
     implementation 'pw.chew:jda-chewtils:1.24.1'
     implementation "me.duncte123:botCommons:2.3.14"
+    implementation 'ch.qos.logback:logback-classic:1.4.1'
+    implementation 'io.github.cdimascio:dotenv-java:2.2.4'
 }
 
 application {
