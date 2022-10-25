@@ -5,9 +5,14 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.raphap3.jdabot.database.SQLiteDataSource;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Listener extends ListenerAdapter {
 
@@ -28,7 +33,7 @@ public class Listener extends ListenerAdapter {
         }
 
         final long guildId = event.getGuild().getIdLong();
-        String prefix = EstaMerdaAquiBixo.PREFIXES.computeIfAbsent(guildId, (id) -> Config.get("prefix"));
+        String prefix = EstaMerdaAquiBixo.PREFIXES.computeIfAbsent(guildId, this::getPrefix);
         String raw = event.getMessage().getContentRaw();
 
         if (raw.equalsIgnoreCase(prefix + "shutdown")
@@ -43,5 +48,35 @@ public class Listener extends ListenerAdapter {
         if (raw.startsWith(prefix)) {
             manager.handle(event, prefix);
         }
+    }
+
+    private String getPrefix(long guildId) {
+        try (final PreparedStatement preparedStatement = SQLiteDataSource
+                .getConnection()
+                // language=SQLite
+                .prepareStatement("SELECT prefix FROM guild_settings WHERE guild_id = ?")) {
+
+            preparedStatement.setString(1, String.valueOf(guildId));
+
+            try (final ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("prefix");
+                }
+            }
+
+            try (final PreparedStatement insertStatement = SQLiteDataSource
+                    .getConnection()
+                    // language=SQLite
+                    .prepareStatement("INSERT INTO guild_settings(guild_id) VALUES(?)")) {
+
+                insertStatement.setString(1, String.valueOf(guildId));
+
+                insertStatement.execute();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Config.get("prefix");
     }
 }
