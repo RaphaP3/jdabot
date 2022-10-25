@@ -6,6 +6,10 @@ import net.raphap3.jdabot.command.ICommand;
 import net.raphap3.jdabot.command.commands.HelpCommand;
 import net.raphap3.jdabot.command.commands.PingCommand;
 import net.raphap3.jdabot.command.commands.admin.SetPrefixCommand;
+import net.raphap3.jdabot.command.commands.music.JoinCommand;
+import net.raphap3.jdabot.command.commands.music.PlayCommand;
+import net.raphap3.jdabot.command.commands.music.SkipCommand;
+import net.raphap3.jdabot.command.commands.music.StopCommand;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -21,6 +25,11 @@ public class CommandManager {
         addCommand(new HelpCommand(this));
 
         addCommand(new SetPrefixCommand());
+
+        addCommand(new JoinCommand());
+        addCommand(new PlayCommand());
+        addCommand(new StopCommand());
+        addCommand(new SkipCommand());
     }
 
     private void addCommand(ICommand cmd) {
