@@ -5,6 +5,7 @@ import net.raphap3.jdabot.command.CommandContext;
 import net.raphap3.jdabot.command.ICommand;
 import net.raphap3.jdabot.command.commands.HelpCommand;
 import net.raphap3.jdabot.command.commands.PingCommand;
+import net.raphap3.jdabot.command.commands.admin.SetPrefixCommand;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class CommandManager {
     public CommandManager() {
         addCommand(new PingCommand());
         addCommand(new HelpCommand(this));
+
+        addCommand(new SetPrefixCommand());
     }
 
     private void addCommand(ICommand cmd) {
@@ -47,9 +50,9 @@ public class CommandManager {
         return null;
     }
 
-    void handle(GuildMessageReceivedEvent event) {
+    void handle(GuildMessageReceivedEvent event, String prefix) {
         String[] split = event.getMessage().getContentRaw()
-                .replaceFirst("(?i)" + Pattern.quote(Config.get("prefix")), "")
+                .replaceFirst("(?i)" + Pattern.quote(prefix), "")
                 .split("\\s+");
 
         String invoke = split[0].toLowerCase();

@@ -2,7 +2,7 @@ package net.raphap3.jdabot.command.commands;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.raphap3.jdabot.CommandManager;
-import net.raphap3.jdabot.Config;
+import net.raphap3.jdabot.EstaMerdaAquiBixo;
 import net.raphap3.jdabot.command.CommandContext;
 import net.raphap3.jdabot.command.ICommand;
 
@@ -23,11 +23,15 @@ public class HelpCommand implements ICommand {
 
         if (args.isEmpty()) {
             StringBuilder builder = new StringBuilder();
+            String prefix = EstaMerdaAquiBixo.PREFIXES.get(ctx.getGuild().getIdLong());
 
             builder.append("Lista de comandos\n");
 
             manager.getCommands().stream().map(ICommand::getName).forEach(
-                    (it) -> builder.append('`').append(Config.get("prefix")).append(it).append("`\n")
+                    (it) -> builder.append('`')
+                            .append(prefix)
+                            .append(it)
+                            .append("`\n")
             );
 
             channel.sendMessage(builder.toString()).queue();
