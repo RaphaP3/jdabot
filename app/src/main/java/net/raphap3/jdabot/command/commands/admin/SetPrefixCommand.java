@@ -6,10 +6,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.raphap3.jdabot.EstaMerdaAquiBixo;
 import net.raphap3.jdabot.command.CommandContext;
 import net.raphap3.jdabot.command.ICommand;
-import net.raphap3.jdabot.database.SQLiteDataSource;
+import net.raphap3.jdabot.database.DatabaseManager;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 public class SetPrefixCommand implements ICommand {
@@ -48,18 +46,6 @@ public class SetPrefixCommand implements ICommand {
 
     private void updatePrefix(long guildId, String newPrefix) {
         EstaMerdaAquiBixo.PREFIXES.put(guildId, newPrefix);
-
-        try (final PreparedStatement preparedStatement = SQLiteDataSource
-                .getConnection()
-                // language=SQLite
-                .prepareStatement("UPDATE guild_settings SET prefix = ? WHERE guild_id = ?")) {
-
-            preparedStatement.setString(1, newPrefix);
-            preparedStatement.setString(2, String.valueOf(guildId));
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        DatabaseManager.INSTANCE.setPrefix(guildId, newPrefix);
     }
 }
