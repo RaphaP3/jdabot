@@ -3,6 +3,7 @@ package net.raphap3.jdabot;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.raphap3.jdabot.command.CommandContext;
 import net.raphap3.jdabot.command.ICommand;
+import net.raphap3.jdabot.command.commands.HelpCommand;
 import net.raphap3.jdabot.command.commands.PingCommand;
 
 import javax.annotation.Nullable;
@@ -16,6 +17,7 @@ public class CommandManager {
 
     public CommandManager() {
         addCommand(new PingCommand());
+        addCommand(new HelpCommand(this));
     }
 
     private void addCommand(ICommand cmd) {
@@ -28,8 +30,12 @@ public class CommandManager {
         commands.add(cmd);
     }
 
+    public List<ICommand> getCommands() {
+        return commands;
+    }
+
     @Nullable
-    private ICommand getCommand(String search) {
+    public ICommand getCommand(String search) {
         String searchLower = search.toLowerCase();
 
         for (ICommand cmd : this.commands) {

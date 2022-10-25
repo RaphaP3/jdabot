@@ -7,6 +7,8 @@ public interface ICommand {
 
     String getName();
 
+    String getHelp();
+
     default List<String> getAliases() {
         return List.of(); // if Java Version =< 8 use Arrays.asList
     }
