@@ -1,6 +1,5 @@
 package net.raphap3.jdabot.command.commands.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -12,7 +11,7 @@ import net.raphap3.jdabot.lavaplayer.PlayerManager;
 import java.util.Collections;
 import java.util.List;
 
-public class SkipCommand implements ICommand {
+public class RepeatCommand implements ICommand {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void handle(CommandContext ctx) {
@@ -39,30 +38,26 @@ public class SkipCommand implements ICommand {
         }
 
         final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(ctx.getGuild());
-        final AudioPlayer audioPlayer = musicManager.audioPlayer;
+        final boolean newRepeating = !musicManager.scheduler.repeating;
 
-        if (audioPlayer.getPlayingTrack() == null) {
-            channel.sendMessage("Não tem nenhuma música tocando atualmente").queue();
-            return;
-        }
+        musicManager.scheduler.repeating = newRepeating;
 
-        musicManager.scheduler.nextTrack();
-        channel.sendMessage("Pulei a música atual").queue();
+        channel.sendMessageFormat("O player foi setado para **%s**", newRepeating ? "repetindo" : "não repetindo").queue();
     }
 
     @Override
     public String getName() {
-        return "skip";
+        return "repeat";
     }
 
     @Override
     public String getHelp() {
-        return "Pula a música atual\n" +
-                "Aliases: `s`";
+        return "Coloca a música atual em loop\n" +
+                "Aliases: `loop`";
     }
 
     @Override
     public List<String> getAliases() {
-        return Collections.singletonList("s");
+        return Collections.singletonList("loop");
     }
 }

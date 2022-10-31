@@ -61,9 +61,10 @@ public class PlayCommand implements ICommand {
 
     @Override
     public String getHelp() {
-        return "Toca uma música\n" +
-                "Usagem: `!!play <link>`" +
-                "Aliases: `p`";
+        return """
+                Toca uma música
+                Usagem: `!!play <link>`
+                Aliases: `p`""";
     }
 
     @Override

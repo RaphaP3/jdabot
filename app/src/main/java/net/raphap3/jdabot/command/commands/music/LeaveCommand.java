@@ -1,9 +1,10 @@
 package net.raphap3.jdabot.command.commands.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.managers.AudioManager;
 import net.raphap3.jdabot.command.CommandContext;
 import net.raphap3.jdabot.command.ICommand;
 import net.raphap3.jdabot.lavaplayer.GuildMusicManager;
@@ -12,7 +13,7 @@ import net.raphap3.jdabot.lavaplayer.PlayerManager;
 import java.util.Collections;
 import java.util.List;
 
-public class SkipCommand implements ICommand {
+public class LeaveCommand implements ICommand {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void handle(CommandContext ctx) {
@@ -38,31 +39,32 @@ public class SkipCommand implements ICommand {
             return;
         }
 
-        final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(ctx.getGuild());
-        final AudioPlayer audioPlayer = musicManager.audioPlayer;
+        final Guild guild = ctx.getGuild();
+        final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
+        final AudioManager audioManager = guild.getAudioManager();
 
-        if (audioPlayer.getPlayingTrack() == null) {
-            channel.sendMessage("Não tem nenhuma música tocando atualmente").queue();
-            return;
-        }
+        musicManager.scheduler.repeating = false;
+        musicManager.scheduler.queue.clear();
+        musicManager.audioPlayer.stopTrack();
 
-        musicManager.scheduler.nextTrack();
-        channel.sendMessage("Pulei a música atual").queue();
+        audioManager.closeAudioConnection();
+
+        channel.sendMessage("Eu saí da call").queue();
     }
 
     @Override
     public String getName() {
-        return "skip";
+        return "leave";
     }
 
     @Override
     public String getHelp() {
-        return "Pula a música atual\n" +
-                "Aliases: `s`";
+        return "Desconecta o bot da call\n" +
+                "Aliases: `dc`";
     }
 
     @Override
     public List<String> getAliases() {
-        return Collections.singletonList("s");
+        return Collections.singletonList("dc");
     }
 }

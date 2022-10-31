@@ -1,6 +1,8 @@
 package net.raphap3.jdabot.command.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -12,7 +14,7 @@ import net.raphap3.jdabot.lavaplayer.PlayerManager;
 import java.util.Collections;
 import java.util.List;
 
-public class SkipCommand implements ICommand {
+public class NowPlayingCommand implements ICommand {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void handle(CommandContext ctx) {
@@ -40,29 +42,31 @@ public class SkipCommand implements ICommand {
 
         final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(ctx.getGuild());
         final AudioPlayer audioPlayer = musicManager.audioPlayer;
+        final AudioTrack track = audioPlayer.getPlayingTrack();
 
-        if (audioPlayer.getPlayingTrack() == null) {
+        if (track == null) {
             channel.sendMessage("Não tem nenhuma música tocando atualmente").queue();
             return;
         }
 
-        musicManager.scheduler.nextTrack();
-        channel.sendMessage("Pulei a música atual").queue();
+        final AudioTrackInfo info = track.getInfo();
+
+        channel.sendMessageFormat("Agora tocando `%s` por `%s` (Link: <%s>)", info.title, info.author, info.uri).queue();
     }
 
     @Override
     public String getName() {
-        return "skip";
+        return "nowplaying";
     }
 
     @Override
     public String getHelp() {
-        return "Pula a música atual\n" +
-                "Aliases: `s`";
+        return "Mostra o que está tocando atualmente\n" +
+                "Aliases: `np`";
     }
 
     @Override
     public List<String> getAliases() {
-        return Collections.singletonList("s");
+        return Collections.singletonList("np");
     }
 }

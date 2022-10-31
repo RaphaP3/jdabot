@@ -1,15 +1,14 @@
 package net.raphap3.jdabot;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.raphap3.jdabot.command.CommandContext;
 import net.raphap3.jdabot.command.ICommand;
+import net.raphap3.jdabot.command.commands.EventWaiterCommand;
 import net.raphap3.jdabot.command.commands.HelpCommand;
 import net.raphap3.jdabot.command.commands.PingCommand;
 import net.raphap3.jdabot.command.commands.admin.SetPrefixCommand;
-import net.raphap3.jdabot.command.commands.music.JoinCommand;
-import net.raphap3.jdabot.command.commands.music.PlayCommand;
-import net.raphap3.jdabot.command.commands.music.SkipCommand;
-import net.raphap3.jdabot.command.commands.music.StopCommand;
+import net.raphap3.jdabot.command.commands.music.*;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -20,16 +19,21 @@ import java.util.regex.Pattern;
 public class CommandManager {
     private final List<ICommand> commands = new ArrayList<>();
 
-    public CommandManager() {
+    public CommandManager(EventWaiter waiter) {
         addCommand(new PingCommand());
         addCommand(new HelpCommand(this));
+        addCommand(new EventWaiterCommand(waiter));
 
         addCommand(new SetPrefixCommand());
 
         addCommand(new JoinCommand());
+        addCommand(new NowPlayingCommand());
         addCommand(new PlayCommand());
         addCommand(new StopCommand());
         addCommand(new SkipCommand());
+        addCommand(new QueueCommand());
+        addCommand(new RepeatCommand());
+        addCommand(new LeaveCommand());
     }
 
     private void addCommand(ICommand cmd) {
@@ -70,8 +74,9 @@ public class CommandManager {
         if (cmd != null) {
             event.getChannel().sendTyping().queue();
             List<String> args = Arrays.asList(split).subList(1, split.length);
+            String argsText = String.join(" ", args);
 
-            CommandContext ctx = new CommandContext(event, args);
+            CommandContext ctx = new CommandContext(event, args, argsText);
 
             cmd.handle(ctx);
         }

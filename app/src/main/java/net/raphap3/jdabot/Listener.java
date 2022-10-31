@@ -1,5 +1,6 @@
 package net.raphap3.jdabot;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import me.duncte123.botcommons.BotCommons;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -13,7 +14,11 @@ import org.slf4j.LoggerFactory;
 public class Listener extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
-    private final CommandManager manager = new CommandManager();
+    private final CommandManager manager;
+
+    public Listener(EventWaiter waiter) {
+        manager = new CommandManager(waiter);
+    }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {

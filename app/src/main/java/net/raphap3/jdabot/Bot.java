@@ -1,5 +1,6 @@
 package net.raphap3.jdabot;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -11,9 +12,12 @@ import java.util.EnumSet;
 public class Bot {
 
     private Bot() throws LoginException {
+        EventWaiter waiter = new EventWaiter();
+
         JDABuilder.createDefault(
                 Config.get("token"),
                 GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS,
                 GatewayIntent.GUILD_VOICE_STATES
         )
                 .disableCache(EnumSet.of(
@@ -22,8 +26,8 @@ public class Bot {
                         CacheFlag.EMOTE
                 ))
                 .enableCache(CacheFlag.VOICE_STATE)
-                .addEventListeners(new Listener())
-                .setActivity(Activity.listening("pora jaum :v"))
+                .addEventListeners(new Listener(waiter), waiter)
+                .setActivity(Activity.listening("!!help"))
                 .build();
 
     }
