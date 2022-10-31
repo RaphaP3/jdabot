@@ -1,8 +1,11 @@
 package net.raphap3.jdabot.command.commands.music;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.managers.AudioManager;
 import net.raphap3.jdabot.command.CommandContext;
 import net.raphap3.jdabot.command.ICommand;
 import net.raphap3.jdabot.lavaplayer.PlayerManager;
@@ -17,37 +20,52 @@ public class PlayCommand implements ICommand {
     @Override
     public void handle(CommandContext ctx) {
         final TextChannel channel = ctx.getChannel();
+        final List<String> args = ctx.getArgs();
 
-        if (ctx.getArgs().isEmpty()) {
+        if (args.isEmpty()) {
             channel.sendMessage("A usagem correta seria `!!play <link>`").queue();
             return;
         }
 
         final Member selfMember = ctx.getSelfMember();
         final GuildVoiceState voiceState = selfMember.getVoiceState();
+        final Member member = ctx.getMember();
+        final GuildVoiceState memberVoiceState = member.getVoiceState();
+        final AudioManager audioManager = ctx.getGuild().getAudioManager();
+        final VoiceChannel memberChannel = memberVoiceState.getChannel();
+
+        String link = String.join(" ", args);
 
         if (!voiceState.inVoiceChannel()) {
-            channel.sendMessage("Eu preciso estar em uma call para isto funcionar").queue();
+            if (!selfMember.hasPermission(memberChannel, Permission.VOICE_CONNECT)) {
+                channel.sendMessage("Eu não tenho permissão de entrar na sua call :(").queue();
+                return;
+            }
+
+            audioManager.openAudioConnection(memberChannel);
+
+            if (!isUrl(link)) {
+                channel.sendMessage("Por favor mande um link").queue();
+            }
+
+            PlayerManager.getInstance()
+                    .loadAndPlay(channel, link);
             return;
         }
 
-        final Member member = ctx.getMember();
-        final GuildVoiceState memberVoiceState = member.getVoiceState();
 
         if (!memberVoiceState.inVoiceChannel()) {
             channel.sendMessage("Você precisa estar em uma call para este comando funcionar").queue();
             return;
         }
 
-        if (!memberVoiceState.getChannel().equals(voiceState.getChannel())) {
+        if (!memberChannel.equals(voiceState.getChannel())) {
             channel.sendMessage("Você precisa estar na mesma call que eu pra isso funcionar").queue();
             return;
         }
 
-        String link = String.join(" ", ctx.getArgs());
-
         if (!isUrl(link)) {
-            link = "ytsearch:" + link;
+            channel.sendMessage("Por favor mande um link").queue();
         }
 
         PlayerManager.getInstance()
@@ -72,6 +90,7 @@ public class PlayCommand implements ICommand {
         return Collections.singletonList("p");
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isUrl(String url) {
         try {
             new URI(url);
