@@ -21,7 +21,7 @@ dependencies {
     implementation 'pw.chew:jda-chewtils:1.24.1'
     implementation "me.duncte123:botCommons:2.3.14"
     implementation 'ch.qos.logback:logback-classic:1.4.1'
-    implementation 'io.github.cdimascio:dotenv-java:2.2.4'
+//    implementation 'io.github.cdimascio:dotenv-java:2.2.4'
 
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'org.xerial:sqlite-jdbc:3.39.3.0'
