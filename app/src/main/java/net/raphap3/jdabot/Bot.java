@@ -8,11 +8,13 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
 import java.util.EnumSet;
+import java.util.Timer;
 
 public class Bot {
 
     private Bot() throws LoginException {
         EventWaiter waiter = new EventWaiter();
+        Timer timer = new Timer();
 
         JDABuilder.createDefault(
                 Config.get("token"),
@@ -26,15 +28,13 @@ public class Bot {
                         CacheFlag.EMOTE
                 ))
                 .enableCache(CacheFlag.VOICE_STATE)
-                .addEventListeners(new Listener(waiter), waiter)
+                .addEventListeners(new Listener(waiter, timer), waiter)
                 .setActivity(Activity.listening("!!help"))
                 .build();
-
     }
 
     @SuppressWarnings("InstantiationOfUtilityClass")
     public static void main(String[] args) throws LoginException {
         new Bot();
     }
-
 }

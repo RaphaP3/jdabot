@@ -72,12 +72,27 @@ public class PlayerManager {
 
             @Override
             public void noMatches() {
+                channel.sendMessage("""
+                                **ERRO:** ```diff
+                                - Não foi possível encontrar uma fonte válida com este link
 
+                                Recomendações:
+                                + Verifique se o link não está com restrição de idade
+                                ```""")
+                        .queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
+                channel.sendMessage("""
+                                **ERRO:** ```diff
+                                - Não foi possível tocar a música atual na fila, pulando pra próxima
 
+                                Recomendações:
+                                + Tente novamente mais tarde
+                                + Verifique se o link não está com restrição de idade
+                                ```""")
+                        .queue();
             }
         });
     }
