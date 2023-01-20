@@ -71,7 +71,7 @@ public class Listener extends ListenerAdapter {
         AudioManager audioManager = guild.getAudioManager();
         GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
 
-        timer.schedule(new DisconnectTask(channel, audioManager, musicManager), 5000);
+        timer.schedule(new DisconnectTask(channel, audioManager, musicManager), 120000);
     }
 
     private static class DisconnectTask extends TimerTask {
